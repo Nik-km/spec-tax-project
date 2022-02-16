@@ -118,24 +118,44 @@ TO.HP.df <- NHPI %>%
 
 
 
-
-
-
-
-
-
-##################################
-###         Rough Work          ##
-##################################
-
-PROV_ID <- c(59, 35, 24)  # BC, ON, QB
-
 # Making the province and territory names consistent
 can.df <- can.df %>%
     dplyr::mutate(
         Province_Territory = gsub(", Canada", "", Province_Territory) %>% factor(),
         Province_Territory = gsub(",Canada", "", Province_Territory) %>% factor()
     )
+
+
+
+
+
+
+
+
+##################################
+###           CANSIM            ##
+##################################
+
+
+# 36-10-0126 -- Property income of households, Canada
+
+# 11-10-0057 -- Assets and debts by after-tax income quintile, Canada, provinces and selected census metropolitan areas, Survey of Financial Security 11100057
+
+# 11-10-0239 -- Income of individuals by age group, sex and income source, Canada, provinces and selected census metropolitan areas 206-0052
+
+# 11-10-0238 -- Distribution of market, total and after-tax income of individuals, Canada, provinces and selected census metropolitan areas 206-0051
+
+# 11-10-0237 -- Distribution of market, total and after-tax income by economic family type, Canada, provinces and selected census metropolitan areas (CMAs) 206-0012
+
+# 11-10-0190 -- Market income, government transfers, total income, income tax and after-tax income by economic family type 206-0011
+
+# 11-10-0191 -- Income statistics by economic family type and income source 206-0021
+
+# 11-10-0004 -- Selected characteristics of tax filers and dependants, income and demographics (final T1 Family File) 111-0004
+
+
+
+
 
 
 
