@@ -1,0 +1,367 @@
+---
+# title: "reg_tables"
+output: pdf_document
+header-includes:
+   - \usepackage{amsmath}
+   - \usepackage{xcolor}
+   - \usepackage{relsize}
+# fontsize: 12pt
+# linestretch: 1.5
+---
+
+```{r setup, include=FALSE}
+library(stargazer)
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE,
+                      collapse = TRUE,
+                      results = "hide",
+                      comment = "#>")
+
+# To ensure that the appropriate TeX packages are installed, run the following: 
+# tinytex::check_installed('relsize')
+
+# If FALSE, then run the following code:
+# tinytex::tlmgr_search("relsize")
+# tinytex::tlmgr_install("relsize")   # install the relsize package
+# tinytex::tlmgr_update()             # update everything
+```
+
+```{r, include=FALSE}
+# Importing R scripts
+source("reg_models.R", local = knitr::knit_global())
+source("data-exploration.R", local = knitr::knit_global())
+```
+
+
+```{r, results='asis'}
+# Summary Statistics
+stargazer(df.stats, 
+          # type = "latex", 
+          header = FALSE,    # gets ride of citation
+          title = "Summary statistics for the subsetted data",
+          digits = 0, 
+          font.size = "normalsize",
+          covariate.labels = c("House price index (HPI)",
+                               "Population",
+                               'Unemployment rate*',
+                               "Labour force participation rate*",
+                               "Mortgage rate*",
+                               
+                               "Total housing completions",
+                               "\\ \\ Completed single-detached units",
+                               "\\ \\ Completed semi-detached units",
+                               "\\ \\ Completed row units",
+                               
+                               "Total housing starts",
+                               "\\ \\ Starts on single-detached units",
+                               "\\ \\ Starts on semi-detached units",
+                               "\\ \\ Starts on row units",
+                               
+                               "Total under construction (u.c.)",
+                               "\\ \\ Single-detached units (u.c.)",
+                               "\\ \\ Semi-detached units (u.c.)",
+                               "\\ \\ Row units (u.c.)",
+                               
+                               "Median income",
+                               "Income of couples with kids",
+                               "Population aged under 17",
+                               "Population aged 18-64",
+                               "Population aged 65 and over",
+                               "Total number of Families",
+                               "Total families with children",
+                               escape = FALSE),
+          notes.align = "l",
+          notes = c("*variables with an asterisk(*) are percentage figures"),
+          notes.append = TRUE)
+```
+
+_Note_: The table above describes the summary statistics of the final compiled and subsetted dataset for 24 variables.
+
+\newpage
+
+```{r, results='asis'}
+# Changing the format of the column names
+sum_HPI$GEO <- c("Calgary", 
+                 "Edmonton", 
+                 "Guelph$\\color{red}^\\mathlarger{*}$", 
+                 "Hamilton$\\color{red}^\\mathlarger{*}$", 
+                 "Kelowna$\\color{blue}^\\ddagger$", 
+                 "Kitchener$\\color{red}^\\mathlarger{*}$", 
+                 "London$\\color{red}^\\mathlarger{*}$",
+                 "Montreal", 
+                 "Niagara$\\color{red}^\\mathlarger{*}$", 
+                 "Oshawa$\\color{red}^\\mathlarger{*}$",
+                 "Ottawa", 
+                 "Sudbury", 
+                 "Toronto$\\color{red}^\\mathlarger{*}$", 
+                 "Vancouver$\\color{blue}^{\\dagger \\ddagger}$", 
+                 "Victoria$\\color{blue}^\\ddagger$", 
+                 "Windsor")
+
+# Summary statistics for the HPI
+kbl(sum_HPI, 
+    caption = "Summary statistics for House Price Index (HPI) across all 16 cities in the data",
+    booktabs = T,
+    # format = "latex",
+    digits = c(0, 0, 2, 2, 1, 2, 2, 2, 1),
+    col.names = c("City", "N", "Mean", "St. Dev.", "Min", "Q1", "Median", "Q3", "Max"),
+    linesep = "",
+    escape = FALSE
+    ) %>% kable_styling(latex_options = c("striped", "hold_position"))
+
+```
+
+_Note_: Summary statistics for those regions marked with the red asterisk(\*) are where the NRST applied, and the cities marked with the blue dagger($\dagger$) and double-dagger($\ddagger$) represent the cities for which different versions of the APTT applied to (i.e., $\dagger$APT1, $\ddagger$APT2).
+
+
+\newpage
+
+```{r, results='asis'}
+# Base DID Model
+stargazer(did.base, 
+          type = "latex",
+          header = FALSE,    # gets ride of citation
+          dep.var.labels = c("log(HPI)"),
+          font.size = "normalsize",
+          # out = "~\\Projects\\spec-tax-project\\Analysis\\did_base_reg.html",
+          title = "Base difference-in-differences (DID) regression model",
+          order = c("Constant",
+                    "tr_NRST:NRST", 
+                    "tr_APT1:APT1", 
+                    "tr_APT2:APT2",
+                    
+                    "tr_NRST",
+                    "NRST",
+                    "tr_APT1",
+                    "APT1",
+                    "tr_APT2",
+                    "APT2"
+                    ),
+          covariate.labels = c("Constant",
+                               "NRST interaction",
+                               "ABT1 interaction",
+                               "ABT2 interaction",
+                               
+                               "NRST regional dummy",
+                               "NRST post-treatment dummy",
+                               "ABT1 regional dummy",
+                               "ABT1 post-treatment dummy",
+                               "ABT2 regional dummy",
+                               "ABT2 post-treatment dummy"
+                               ),
+          # notes = c("all variables are log transformations"),
+          notes.append = FALSE,
+          column.separate = c(1, 1)
+          # omit.stat = c("f", "ser","rsq")
+          )
+```
+
+_Note_: The table above shows the results of the simple difference-in-differences base model. The dependent variable is the logarithmic transformation of the New Housing Price Index.
+
+\newpage
+
+```{r, results='asis'}
+# Full DID Model w/ all model specs, removed: did.hc
+stargazer(did.base, did.ctrls, did.ctrls2, did.hc2, did.demo, did.inc, did.all, did.all2,
+          title = "DID regression models with controls and log(HPI) as the dependent variable",
+          header = FALSE,    # gets ride of citation
+          type = "latex",
+          # out = "~\\Projects\\spec-tax-project\\Analysis\\did_full_reg.html",
+          dep.var.labels.include = FALSE, 
+          font.size = "footnotesize",
+          column.sep.width = "-10pt",
+          style = "aer",
+          keep=c("Constant", 
+                 "tr_NRST:NRST", 
+                 "tr_APT1:APT1", 
+                 "tr_APT2:APT2",
+                 "lnPop", 
+                 "lnFam", 
+                 "lnUR", 
+                 "lnLFPR", 
+                 "lnMort", 
+                 "lnInc_med", 
+                 "lnInc_Cwkids",
+                 "lnStarts_total", 
+                 "lnStarts_single", 
+                 "lnStarts_semi", 
+                 "lnStarts_row", 
+                 "lnCompl_total", 
+                 "lnCompl_single", 
+                 "lnCompl_semi", 
+                 "lnCompl_row"),
+          # omit = c("tr_NRST", "NRST", "tr_APT1", "APT1", "tr_APT2", "APT2"),
+          order = c("Constant", 
+                    "tr_NRST:NRST", 
+                    "tr_APT1:APT1", 
+                    "tr_APT2:APT2",
+                    
+                    # "tr_NRST", 
+                    # "NRST", 
+                    # "tr_APT1", 
+                    # "APT1", 
+                    # "tr_APT2", 
+                    # "APT2", 
+                    
+                    "lnPop", 
+                    "lnFam", 
+                    "lnUR", 
+                    "lnLFPR", 
+                    "lnMort", 
+                    "lnInc_med", 
+                    "lnInc_Cwkids",
+                    
+                    "lnStarts_total", 
+                    "lnStarts_single", 
+                    "lnStarts_semi", 
+                    "lnStarts_row", 
+                    
+                    "lnCompl_total", 
+                    "lnCompl_single", 
+                    "lnCompl_semi", 
+                    "lnCompl_row"
+                    ),
+          covariate.labels = c("Constant",
+                               "NRST interaction",
+                               "ABT1 interaction",
+                               "ABT2 interaction",
+                               
+                               # "NRST regional dummy",
+                               # "NRST post-treatment dummy",
+                               # "ABT1 regional dummy",
+                               # "ABT1 post-treatment dummy",
+                               # "ABT2 regional dummy",
+                               # "ABT2 post-treatment dummy",
+                               
+                               "Population",
+                               "Number of Families",
+                               "Unemployment rate",
+                               "Labour force participation rate",
+                               "Mortgage rate",
+                               "Median income",
+                               "Income of couples with kids",
+                               
+                               "Total construction starts",
+                               "\\ \\ \\ \\ \\ Starts on single-detached units",
+                               "\\ \\ \\ \\ \\ Starts on semi-detached units",
+                               "\\ \\ \\ \\ \\ Starts on row units",
+                               "Total construction completions",
+                               "\\ \\ \\ \\ \\ Completed single-detached units",
+                               "\\ \\ \\ \\ \\ Completed semi-detached units",
+                               "\\ \\ \\ \\ \\ Completed row units",
+                               escape = FALSE
+                               ),
+          # omit = c("NRST regional dummy", "NRST post-treatment dummy", "ABT1 regional dummy",
+          #                      "ABT1 post-treatment dummy", "ABT2 regional dummy",
+          #                      "ABT2 post-treatment dummy"),
+          notes = c("all variables are log transformations,          ∗ p<0.1; ∗∗ p<0.05; ∗∗∗ p<0.01"),
+          notes.append = FALSE,
+          column.separate = c(1, 1),
+          omit.stat = c("f", "ser","rsq"))
+```
+
+_Note_: The table above shows the results of the full difference-in-differences base model with controls.
+
+\newpage
+
+```{r, results='asis'}
+# Full FE DID Model
+stargazer(fe.base, fe.ctrls, fe.ctrls2, fe.hc2, fe.demo, fe.inc, fe.all, fe.all2,
+          title = "Fixed effects difference-in-differences regression models with log(HPI) as the dependent variable",
+          header = FALSE,    # gets ride of citation
+          type = "latex",
+          # out = "~\\Projects\\spec-tax-project\\Analysis\\fe_reg.html",
+          dep.var.labels.include = FALSE, 
+          font.size = "footnotesize",
+          column.sep.width = "-10pt",
+          style = "aer",
+          keep=c("tr_NRST:NRST", 
+                 "tr_APT1:APT1", 
+                 "tr_APT2:APT2",
+                 "lnPop", 
+                 "lnFam", 
+                 "lnUR", 
+                 "lnLFPR", 
+                 "lnMort", 
+                 "lnInc_med", 
+                 "lnInc_Cwkids",
+                 "lnStarts_total", 
+                 "lnStarts_single", 
+                 "lnStarts_semi", 
+                 "lnStarts_row", 
+                 "lnCompl_total", 
+                 "lnCompl_single", 
+                 "lnCompl_semi", 
+                 "lnCompl_row"),
+          # omit = c("tr_NRST", "NRST", "tr_APT1", "APT1", "tr_APT2", "APT2"),
+          order = c("tr_NRST:NRST", 
+                    "tr_APT1:APT1", 
+                    "tr_APT2:APT2",
+                    
+                    # "tr_NRST", 
+                    # "NRST", 
+                    # "tr_APT1", 
+                    # "APT1", 
+                    # "tr_APT2", 
+                    # "APT2", 
+                    
+                    "lnPop", 
+                    "lnFam", 
+                    "lnUR", 
+                    "lnLFPR", 
+                    "lnMort", 
+                    "lnInc_med", 
+                    "lnInc_Cwkids",
+                    
+                    "lnStarts_total", 
+                    "lnStarts_single", 
+                    "lnStarts_semi", 
+                    "lnStarts_row", 
+                    
+                    "lnCompl_total", 
+                    "lnCompl_single", 
+                    "lnCompl_semi", 
+                    "lnCompl_row"
+          ),
+          covariate.labels = c("NRST interaction",
+                               "ABT1 interaction",
+                               "ABT2 interaction",
+                               
+                               # "NRST regional dummy",
+                               # "NRST post-treatment dummy",
+                               # "ABT1 regional dummy",
+                               # "ABT1 post-treatment dummy",
+                               # "ABT2 regional dummy",
+                               # "ABT2 post-treatment dummy",
+                               
+                               "Population",
+                               "Number of Families",
+                               "Unemployment rate",
+                               "Labour force participation rate",
+                               "Mortgage rate",
+                               "Median income",
+                               "Income of couples with kids",
+                               
+                               "Total construction starts",
+                               "\\ \\ \\ \\ \\ Starts on single-detached units",
+                               "\\ \\ \\ \\ \\ Starts on semi-detached units",
+                               "\\ \\ \\ \\ \\ Starts on row units",
+                               "Total construction completions",
+                               "\\ \\ \\ \\ \\ Completed single-detached units",
+                               "\\ \\ \\ \\ \\ Completed semi-detached units",
+                               "\\ \\ \\ \\ \\ Completed row units",
+                               escape = FALSE
+          ),
+          # omit = c("NRST regional dummy", "NRST post-treatment dummy", "ABT1 regional dummy",
+          #                      "ABT1 post-treatment dummy", "ABT2 regional dummy",
+          #                      "ABT2 post-treatment dummy"),
+          notes = c("all variables are log transformations,  ∗ p<0.1; ∗∗ p<0.05; ∗∗∗ p<0.01"),
+          notes.append = FALSE,
+          column.separate = c(1, 1),
+          omit.stat = c("f", "ser","rsq"))
+```
+
+_Note_: The table above shows the results of the fixed effects difference-in-differences model. The dependent variable is the logarithmic transformation of the New Housing Price Index and the first column corresponds to the base fixed effects model.
+
+

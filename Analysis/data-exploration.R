@@ -230,46 +230,44 @@ sum_HPI <- df.stats %>%
 
 
 # Variable Selection -------------------------------------------------------------------------------------------------------
-
-length(names(df[13:ncol(df)]))  # w/ 21 possible predictors, this means there are 2^21 = 2,097,152 possible models
+length(names(df[13:ncol(df)]))  # w/ 21 possible predictors, this means there are 2^23 = 8,388,608 possible models
 
 df.sel <- df %>% 
     select(Date, GEO, HPI, NRST, APT1, APT2, tr_NRST, tr_APT1, tr_APT2, TRxNRST, TRxAPT1, TRxAPT2, 
-           Pop, LF, Unempl, 
+           Pop, LF_RATE, URATE, 
            Compl_total, Starts_total, UC_total,
            Compl_single, Compl_semi, Compl_row, 
            Starts_single, Starts_semi, Starts_row, 
            UC_single, UC_semi, UC_row, 
-           Mort_rate, InMort_total, 
+           Mort_rate, 
            Inc_med, Age0_17, Age18_64, Age65_over, 
-           num_fam, pop_wkids, 
+           num_fam, pop_kids, 
            Inc_cpl_kids) %>% 
     na.omit()
 
 # hist(df.sel$HPI)    # histogram follows a normal distribution shape, therefore don't need to take the log of HPI
 cat(names(df.sel[13:ncol(df.sel)]), sep=' + ')  # all predictors
 
-regfit.full <- regsubsets(HPI ~ TRxNRST + TRxAPT1 + TRxAPT2 + 
-                              Pop + LF + Unempl + Compl_total + Starts_total + UC_total + Compl_single + 
+regfit.full <- regsubsets(HPI ~ NRST*tr_NRST + APT1*tr_APT1 + APT2*tr_APT2 + 
+                              Pop + LF_RATE + URATE + Compl_total + Starts_total + UC_total + Compl_single + 
                               Compl_semi + Compl_row + Starts_single + Starts_semi + Starts_row + 
-                              UC_single + UC_semi + UC_row + Mort_rate + InMort_total + Inc_med + 
-                              Age0_17 + Age18_64 + Age65_over + num_fam + pop_wkids + Inc_cpl_kids, 
+                              UC_single + UC_semi + UC_row + Mort_rate + Inc_med + 
+                              Age0_17 + Age18_64 + Age65_over + num_fam + pop_kids + Inc_cpl_kids, 
                           data = df.sel, nvmax = 9)    # set nvmax = total amount of predictors
 # regfit.full
 
 info <- summary(regfit.full)
-# info
+
 var_sel <- cbind(
     info$which, 
     round(cbind(adjr2 = info$adjr2, 
                 cp = info$cp, 
                 bic = info$bic, 
                 rss = info$rss), 3))
-# var_sel
 
 kbl(var_sel, booktabs = T) %>% kable_styling(latex_options = c("striped", "hold_position"))
 
-
+rm(df.sel, regfit.full, info, var_sel)
 
 
 # Statistics Tables -------------------------------------------------------------------------------------------------------
@@ -281,7 +279,7 @@ stargazer(df.stats,
           title = "Summary statistics for the subsetted data",
           digits = 1, 
           font.size = "normalsize",
-          out = "~\\Projects\\spec-tax-project\\Analysis\\summary_stats.html",
+          # out = "~\\Projects\\spec-tax-project\\Analysis\\summary_stats.html",
           covariate.labels = c("House price index (HPI)",
                                "Population",
                                'Unemployment rate*',
@@ -315,6 +313,8 @@ stargazer(df.stats,
           notes.append = TRUE)
 
 # Summary statistics for the HPI
-kbl(sum_HPI, booktabs = T) %>% kable_styling(latex_options = c("striped", "hold_position"))
-
+kbl(sum_HPI, 
+    booktabs = T,
+    col.names = c("City", "N", "Mean", "St. Dev.", "Min", "Q1", "Median", "Q3", "Max")) %>% 
+    kable_styling(latex_options = c("striped", "hold_position"))
 
