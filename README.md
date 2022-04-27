@@ -8,6 +8,7 @@ Project focuses on the effects of two specific taxes:
 
 
 ## Directories
-* _Data_ folder contains the datasets sourced from the CANSIM database as well as data compiled directly from downloaded microdata of the Labour Force Survey (LFS)
-* _Analysis_ folder contains code for replication using the full data "FULL-DATA.csv" in _Data_
+* **_Data_** folder contains the datasets sourced from the CANSIM database as well as data compiled directly from downloaded microdata of the Labour Force Survey (LFS)
+* **_Analysis_** folder contains code for replication using the dataset "**FULL-DATA.csv**" in **_Data_**
+* **_Visualizations_** folder contains images produced from the R code file "**data-exploration.R**"
 
