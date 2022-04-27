@@ -632,6 +632,7 @@ write.csv(df.full, "~\\Projects\\spec-tax-project\\Data\\FULL-DATA.csv", row.nam
 names(df.full)
 levels(df.full$GEO)
 
+# Remove small datasets
 rm(Inc.cpl, Inc.dist, Inc.med, Lend.int, mort.rates, NHPI, pop.age, pop.cpl, pop.fam, pop.kid, population, supply)
 
 
