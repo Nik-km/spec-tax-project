@@ -357,7 +357,7 @@ agg.fn <- function(dat, x) {
     assign("df", df, envir = .GlobalEnv)
 }
 
-# v <- c("LFSSTAT", "AGE_12", "SEX", "MARSTAT", "EDUC", "COWMAIN", "IMMIG", "EFAMTYPE", "AGYOWNK")
+# LFSSTAT, AGE, SEX, MARSTAT, EDUC, COWMAIN, IMMIG, EFAMTYPE, AGYOWNK
 
 agg.fn(LFS.2017_19, LFSSTAT)
 df1 <- reshape::cast(df, GEO + Date ~ LFSSTAT, value = "freq")
