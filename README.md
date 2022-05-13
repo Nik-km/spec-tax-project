@@ -1,6 +1,6 @@
 # Foreign Buyers Tax Project
 
-4AA3 housing project; studying effects of foreign buyers taxes (i.e., targeted foreign speculation taxes) on residential real estate prices in Canada
+Economic Seminar (ECON 4AA3) housing project; studying effects of foreign buyers taxes (i.e., targeted foreign speculation taxes) on residential real estate prices in Canada
 
 Project focuses on the effects of two specific taxes:
 * The Additional Property Transfer Tax (APTT) applied in British Columbia in 2016 and its later amendment in 2018
