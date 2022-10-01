@@ -138,10 +138,11 @@ full.data %>%
     annotate("text", x = as.Date("2018-04-20"), y = 120, size = 6, label = paste("APT2")) +
     
     scale_x_date(date_breaks = "3 month", date_labels = "%Y-%b") +
+    theme_minimal() +
     theme(title = element_text(size = 19),
           axis.title = element_text(size = 15),
           axis.text.x = element_text(angle=45, hjust=1, size = 13),
-          axis.text.y = element_text(size = 13)) +
+          axis.text.y = element_text(size = 13)) + 
     labs(y = "House Price Index (2016-12=100)", 
          # title = "House Price Index of Major Canadian Cities (2015-2020), Chained to 2016-12-01"),
          x = "Date")

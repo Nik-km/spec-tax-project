@@ -10,11 +10,11 @@ library(cansim)     # access to Statistics Canada's "CANSIM" database
 # Check Unicode characters are intact: Montréal
 
 # Cansim Data -------------------------------------------------------------------------------------------------------
-# avail.data <- list_cansim_cubes()       # Uncomment to look into all available data tables from CANSIM
-# avail.data <- avail.data %>% 
-#     dplyr::select("cansim_table_number", "cubeTitleEn", "cansimId", "cubeStartDate", "cubeEndDate", 
-#                   "releaseTime", "archived", "subjectCode", "surveyCode", "frequencyCode", "corrections", 
-#                   "dimensionNameEn", "surveyEn", "subjectEn")
+avail.data <- list_cansim_cubes()       # Uncomment to look into all available data tables from CANSIM
+avail.data <- avail.data %>%
+    dplyr::select("cansim_table_number", "cubeTitleEn", "cansimId", "cubeStartDate", "cubeEndDate",
+                  "releaseTime", "archived", "subjectCode", "surveyCode", "frequencyCode", "corrections",
+                  "dimensionNameEn", "surveyEn", "subjectEn")
 
 ## Housing Supply -------------------------------------------------------------------------------------------------------
 
